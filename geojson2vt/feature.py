@@ -39,21 +39,22 @@ def calcLineBBox(feature, geom):
 class Slice:
     def __init__(self, geom):
         self.geom = geom
-        self.start = None
-        self.end = None
-        self.size = None
+        self.start = 0.
+        self.end = 0.
+        self.size = 0.
 
     def __getitem__(self, key):
         return self.geom[key]
 
     def __len__(self):
         return len(self.geom)
+    
+    def __iadd__(self, other): # += operator
+        self.geom += other.geom
 
     def append(self, item):
         self.geom.append(item)
 
-    def get(self):
-        return self.geom
 
     def __str__(self):
         return str(self.geom)

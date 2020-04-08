@@ -2,8 +2,8 @@ import math
 
 from geojson2vt.clip import clip, Slice
 
-geom1 = [0, 0, 0, 50, 0, 0, 50, 10, 0, 20, 10, 0, 20, 20, 0, 30, 20, 0, 30, 30,
-    0, 50, 30, 0, 50, 40, 0, 25, 40, 0, 25, 50, 0, 0, 50, 0, 0, 60, 0, 25, 60, 0]
+geom1 = [0., 0., 0., 50., 0., 0., 50., 10., 0., 20., 10., 0., 20., 20., 0., 30., 20., 0., 30., 30.,
+    0., 50., 30., 0., 50., 40., 0., 25., 40., 0., 25., 50., 0., 0., 50., 0., 0., 60., 0., 25., 60., 0.]
 geom2 = [0, 0, 0, 50, 0, 0, 50, 10, 0, 0, 10, 0]
 
 
@@ -64,10 +64,11 @@ def test_clips_line_metrics_on():
 
     expected = [[10.0, 40.0], [70.0, 130.0], [160.0, 200.0], [230.0, 245.0]]
     for i, c in enumerate(clipped):
-        print("C: ", c)
         assert [c.get('geometry').start, c.get('geometry').end] == expected[i]
 
 
+if __name__ == "__main__":
+    test_clips_line_metrics_on()
 # function closed(geometry) {
 #     return [geometry.concat(geometry.slice(0, 3))];
 # }
