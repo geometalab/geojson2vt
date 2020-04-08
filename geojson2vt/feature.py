@@ -1,9 +1,10 @@
-def createFeature(id, type_, geom, tags):
-    test = {"test": 10, "aber": "ud"}
+def createFeature(id_, type_, geom, tags):
+    containes_slices = len(geom) > 0 and isinstance(geom[0], Slice)
+    #geom = geom if containes_slices else [slice_ for slice_ in geom.geom]
     feature = {
-        "id": None if id is None else id,
+        "id": None if id_ is None else id_,
         "type": type_,
-        "geometry": geom,  # geom.get() if isinstance(geom, Slice) else geom,
+        "geometry": geom,
         "tags": tags,
         "minX": float('inf'),
         "minY": float('inf'),
@@ -13,7 +14,6 @@ def createFeature(id, type_, geom, tags):
 
     if type_ == 'Point' or type_ == 'MultiPoint' or type_ == 'LineString':
         calcLineBBox(feature, geom)
-
     elif type_ == 'Polygon':
         # the outer ring(ie[0]) contains all inner rings
         calcLineBBox(feature, geom[0])
@@ -36,25 +36,32 @@ def calcLineBBox(feature, geom):
         feature['maxY'] = max(feature.get('maxY'), geom[i + 1])
 
 
-class Slice:
-    def __init__(self, geom):
-        self.geom = geom
+class Slice(list):
+    def __init__(self, *args):
+        list.__init__(self, *args)
         self.start = 0.
         self.end = 0.
         self.size = 0.
 
-    def __getitem__(self, key):
-        return self.geom[key]
+# class Slice:
+#     def __init__(self, geom):
+#         self.geom = geom
+#         self.start = 0.
+#         self.end = 0.
+#         self.size = 0.
 
-    def __len__(self):
-        return len(self.geom)
-    
-    def __iadd__(self, other): # += operator
-        self.geom += other.geom
+#     def __getitem__(self, key):
+#         return self.geom[key]
 
-    def append(self, item):
-        self.geom.append(item)
+#     def __len__(self):
+#         return len(self.geom)
 
+#     def __iadd__(self, other):  # += operator
+#         self.geom += other.geom
+#         return self.geom
 
-    def __str__(self):
-        return str(self.geom)
+#     def append(self, item):
+#         self.geom.append(item)
+
+#     def __str__(self):
+#         return str(self.geom)

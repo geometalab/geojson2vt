@@ -50,7 +50,7 @@ def test_clips_polylines():
 
 
 def test_clips_line_metrics_on():
-    geom = Slice(geom1.copy())
+    geom = Slice(geom1)
     geom.size = 0
     for i in range(0, len(geom)-3, 3):
         dx = geom[i + 3] - geom[i]

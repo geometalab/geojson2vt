@@ -2,7 +2,8 @@ import math
 from geojson2vt.feature import createFeature, Slice
 
 
-""" clip features between two vertical or horizontal axis-parallel lines:
+r""" 
+clip features between two vertical or horizontal axis-parallel lines:
  *     |        |
  *  ___|___     |     /
  * /   |   \____|____/
@@ -26,10 +27,11 @@ def clip(features, scale, k1, k2, axis, minAll, maxAll, options):
     clipped = []
 
     for feature in features:
-        if isinstance(feature.get('geometry'), list):
-            geometry = Slice(feature.get('geometry'))
-        else:
+        if isinstance(feature.get('geometry'), Slice):
             geometry = feature.get('geometry')
+        else:
+            geometry = Slice(feature.get('geometry'))
+
         type_ = feature.get('type')
 
         min_ = feature.get('minX') if axis == 0 else feature.get('minY')
@@ -44,10 +46,10 @@ def clip(features, scale, k1, k2, axis, minAll, maxAll, options):
         newGeometry = Slice([])  # []
 
         if type_ == 'Point' or type_ == 'MultiPoint':
-            clip_points(geometry, Slice([]), k1, k2, axis)
+            clip_points(geometry, newGeometry, k1, k2, axis)
         elif type_ == 'LineString':
             clip_line(geometry, newGeometry, k1, k2,
-                     axis, False, options.get('lineMetrics'))
+                      axis, False, options.get('lineMetrics', False))
         elif type_ == 'MultiLineString':
             clip_lines(geometry, newGeometry, k1, k2, axis, False)
         elif type_ == 'Polygon':
@@ -57,17 +59,16 @@ def clip(features, scale, k1, k2, axis, minAll, maxAll, options):
                 newPolygon = Slice([])
                 clip_lines(polygon, newPolygon, k1, k2, axis, True)
                 if len(newPolygon) > 0:
-                    #newGeometry.append(newPolygon)
-                    newGeometry += newPolygon
+                    newGeometry.append(newPolygon)
+                    # newGeometry += newPolygon
 
         if len(newGeometry) > 0:
-            if options.get('lineMetrics') and type_ == 'LineString':
-                # for line in newGeometry:
-                for line in newGeometry.geom:
+            if options.get('lineMetrics', False) and type_ == 'LineString':
+                for line in newGeometry:
+                    # for line in newGeometry.geom:
                     clipped.append(createFeature(
                         feature.get('id'), type_, line, feature.get('tags')))
                 continue
-
             if type_ == 'LineString' or type_ == 'MultiLineString':
                 if len(newGeometry) == 1:
                     type_ = 'LineString'
@@ -80,6 +81,7 @@ def clip(features, scale, k1, k2, axis, minAll, maxAll, options):
 
             clipped.append(createFeature(
                 feature.get('id'), type_, newGeometry, feature.get('tags')))
+            # feature.get('id'), type_, newGeometry.geom, feature.get('tags')))
 
     return clipped if len(clipped) > 0 else None
 
@@ -136,10 +138,8 @@ def clip_line(geom, newGeom, k1, k2, axis, isPolygon, trackMetrics):
         if not isPolygon and exited:
             if trackMetrics:
                 slice_.end = l + segLen * t
-            # newGeom.append(slice_)
-            print("newGeom: ", type(newGeom))
-            print("slice: ", type(slice_))
-            newGeom += slice_
+            newGeom.append(slice_)
+            # newGeom += slice_
             slice_ = new_slice(geom)
 
         if trackMetrics:
@@ -152,11 +152,7 @@ def clip_line(geom, newGeom, k1, k2, axis, isPolygon, trackMetrics):
     az = geom[last + 2]
     a = ax if axis == 0 else ay
     if a >= k1 and a <= k2:
-        print("pre slice")
-        print(slice)
         add_point(slice_, ax, ay, az)
-        print("after slice")
-        print(slice)
 
     # close the polygon if its endpoints are not the same after clipping
     last = len(slice_) - 3
@@ -165,13 +161,13 @@ def clip_line(geom, newGeom, k1, k2, axis, isPolygon, trackMetrics):
 
     # add the final slice
     if len(slice_) > 0:
-        # newGeom.append(slice_)
-        newGeom += slice_
+        newGeom.append(slice_)
+        # newGeom += slice_
 
 
 def new_slice(line):
-    # slice_ = []
-    slice_ = Slice(line.geom)
+    # slice_ = Slice(line.geom.copy())
+    slice_ = Slice([])
     slice_.size = line.size
     slice_.start = line.start
     slice_.end = line.end
