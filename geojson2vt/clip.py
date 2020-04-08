@@ -93,9 +93,10 @@ def clip_points(geom, newGeom, k1, k2, axis):
 def clip_line(geom, newGeom, k1, k2, axis, isPolygon, trackMetrics):
     slice_ = new_slice(geom)
     intersect = intersectX if axis == 0 else intersectY
-    l = geom.start
+    l = geom.start if isinstance(geom, Slice) else 0.
     segLen, t = None, None
 
+    # TODO: change geom something if float
     for i in range(0, len(geom) - 3, 3):
         ax = geom[i]
         ay = geom[i + 1]
@@ -163,11 +164,10 @@ def clip_line(geom, newGeom, k1, k2, axis, isPolygon, trackMetrics):
 
 
 def new_slice(line):
-    # slice_ = Slice(line.geom.copy())
     slice_ = Slice([])
-    slice_.size = line.size
-    slice_.start = line.start
-    slice_.end = line.end
+    slice_.size = line.size if isinstance(line, Slice) else 0.
+    slice_.start = line.start if isinstance(line, Slice) else 0.
+    slice_.end = line.end if isinstance(line, Slice) else 0.
     return slice_
 
 
