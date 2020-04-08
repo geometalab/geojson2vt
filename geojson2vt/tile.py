@@ -25,8 +25,8 @@ def createTile(features, z, tx, ty, options):
 
 
 def addFeature(tile, feature, tolerance, options):
-    geom = feature.geometry
-    type_ = feature.type
+    geom = feature.get('geometry')
+    type_ = feature.get('type')
     simplified = []
 
     tile.minX = math.min(tile.minX, feature.minX)
@@ -35,7 +35,7 @@ def addFeature(tile, feature, tolerance, options):
     tile.maxY = math.max(tile.maxY, feature.maxY)
 
     if type_ == 'Point' or type == 'MultiPoint':
-        for i in range(len(geom), step=3):
+        for i in range(0, len(geom), 3):
             simplified.append(geom[i], geom[i + 1])
             tile.numPoints += 1
             tile.numSimplified += 1
@@ -54,7 +54,7 @@ def addFeature(tile, feature, tolerance, options):
             for i in range(len(polygon)):
                 addLine(simplified, polygon[i], tile, tolerance, True, i == 0)
 
-    if (simplified.length):
+    if len(simplified) > 0:
         tags = feature.tags
 
         if type_ == 'LineString' and options.lineMetrics:
@@ -78,11 +78,11 @@ def addLine(result, geom, tile, tolerance, isPolygon, isOuter):
     sqTolerance = tolerance * tolerance
 
     if tolerance > 0 and (geom.size < (isPolygon if isPolygon is not None else tolerance)):
-        tile.numPoints += geom.length / 3
+        tile.numPoints += len(geom) / 3
         return
 
     ring = []
-    for i in range(len(geom), step=3):
+    for i in range(0, len(geom), 3):
         if tolerance == 0 or geom[i + 2] > sqTolerance:
             tile.numSimplified += 1
             ring.append(geom[i], geom[i + 1])
@@ -98,11 +98,11 @@ def rewind(ring, clockwise):
     area = 0
     l = len(ring)
     j = l - 2
-    for i in range(l, step=2):
+    for i in range(0, l, 2):
         area += (ring[i] - ring[j]) * (ring[i + 1] + ring[j + 1])
         j = i
     if area > 0 == clockwise:
-        for i in range(l, step=2):
+        for i in range(0, l, 2):
             x = ring[i]
             y = ring[i + 1]
             ring[i] = ring[len - 2 - i]

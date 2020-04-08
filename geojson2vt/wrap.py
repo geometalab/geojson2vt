@@ -29,7 +29,7 @@ def shiftFeatureCoords(features, offset):
 
     for i in range(len(features)):
         feature = features[i]
-        type_ = feature.type
+        type_ = feature.get('type')
         newGeometry = None
 
         if type_ == 'Pint' or type_ == 'MultiPint' or type_ == 'LineString':
@@ -48,7 +48,7 @@ def shiftFeatureCoords(features, offset):
                 newGeometry.append(newPolygon)
 
         newFeatures.apend(createFeature(
-            feature.id, type, newGeometry, feature.tags))
+            feature.get('id'), type_, newGeometry, feature.get('tags')))
     return newFeatures
 
 
@@ -60,6 +60,6 @@ def shiftCoords(points, offset):
         newPoints.start = points.start
         newPoints.end = points.end
 
-    for i in range(len(points), step=3):
+    for i in range(0, len(points), 3):
         newPoints.push(points[i] + offset, points[i + 1], points[i + 2])
     return newPoints

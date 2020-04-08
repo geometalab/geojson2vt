@@ -1,5 +1,5 @@
 import math
-from geojson2vt.feature import createFeature
+from geojson2vt.feature import createFeature, Slice
 
 
 """ clip features between two vertical or horizontal axis-parallel lines:
@@ -26,11 +26,11 @@ def clip(features, scale, k1, k2, axis, minAll, maxAll, options):
     clipped = []
 
     for feature in features:
-        geometry = feature.geometry
-        type_ = feature.type
+        geometry = feature.get('geometry')
+        type_ = feature.get('type')
 
-        min_ = feature.minX if axis == 0 else feature.minY
-        max_ = feature.maxX if axis == 0 else feature.maxY
+        min_ = feature.get('minX') if axis == 0 else feature.get('minY')
+        max_ = feature.get('maxX') if axis == 0 else feature.get('maxY')
 
         if min_ >= k1 and max_ < k2:  # trivial accept
             clipped.append(feature)
@@ -44,7 +44,7 @@ def clip(features, scale, k1, k2, axis, minAll, maxAll, options):
             clipPoints(geometry, newGeometry, k1, k2, axis)
         elif type_ == 'LineString':
             clipLine(geometry, newGeometry, k1, k2,
-                     axis, False, options.lineMetrics)
+                     axis, False, options.get('lineMetrics'))
         elif type_ == 'MultiLineString':
             clipLines(geometry, newGeometry, k1, k2, axis, False)
         elif type_ == 'Polygon':
@@ -57,10 +57,10 @@ def clip(features, scale, k1, k2, axis, minAll, maxAll, options):
                     newGeometry.append(newPolygon)
 
         if len(newGeometry) > 0:
-            if options.lineMetrics and type_ == 'LineString':
+            if options.get('lineMetrics') and type_ == 'LineString':
                 for line in newGeometry:
                     clipped.append(createFeature(
-                        feature.id, type, line, feature.tags))
+                        feature.get('id'), type_, line, feature.get('tags')))
                 continue
 
             if type_ == 'LineString' or type_ == 'MultiLineString':
@@ -74,13 +74,13 @@ def clip(features, scale, k1, k2, axis, minAll, maxAll, options):
                 type_ = 'Point' if len(newGeometry) == 3 else 'MultiPoint'
 
             clipped.append(createFeature(
-                feature.id, type, newGeometry, feature.tags))
+                feature.get('id'), type_, newGeometry, feature.get('tags')))
 
     return clipped if len(clipped) > 0 else None
 
 
 def clipPoints(geom, newGeom, k1, k2, axis):
-    for i in range(len(geom), step=3):
+    for i in range(0, len(geom), 3):
         a = geom[i + axis]
         if a >= k1 and a <= k2:
             addPoint(newGeom, geom[i], geom[i + 1], geom[i + 2])
@@ -92,7 +92,7 @@ def clipLine(geom, newGeom, k1, k2, axis, isPolygon, trackMetrics):
     l = geom.start
     segLen, t = None, None
 
-    for i in range(len(geom) - 3, step=3):
+    for i in range(0, len(geom) - 3, 3):
         ax = geom[i]
         ay = geom[i + 1]
         az = geom[i + 2]
@@ -138,7 +138,7 @@ def clipLine(geom, newGeom, k1, k2, axis, isPolygon, trackMetrics):
             l += segLen
 
     # add the last point
-    last = geom.length - 3
+    last = len(geom) - 3
     ax = geom[last]
     ay = geom[last + 1]
     az = geom[last + 2]
@@ -147,7 +147,7 @@ def clipLine(geom, newGeom, k1, k2, axis, isPolygon, trackMetrics):
         addPoint(slice_, ax, ay, az)
 
     # close the polygon if its endpoints are not the same after clipping
-    last = slice_.length - 3
+    last = len(slice_) - 3
     if isPolygon and last >= 3 and (slice_[last] != slice_[0] or slice_[last + 1] != slice_[1]):
         addPoint(slice_, slice_[0], slice_[1], slice_[2])
 
@@ -157,10 +157,12 @@ def clipLine(geom, newGeom, k1, k2, axis, isPolygon, trackMetrics):
 
 
 def newSlice(line):
-    slice_ = []
-    slice_.size = line.size
-    slice_.start = line.start
-    slice_.end = line.end
+    # slice_ = []
+    # print("newSlice: ", str(line))
+    slice_ = Slice([])
+    slice_.size = len(line)
+    slice_.start = 0 #line.start
+    slice_.end = len(line) -1
     return slice_
 
 
@@ -170,7 +172,10 @@ def clipLines(geom, newGeom, k1, k2, axis, isPolygon):
 
 
 def addPoint(out, x, y, z):
-    out.append(x, y, z)
+    #out.append(x, y, z)
+    out.append(x)
+    out.append(y)
+    out.append(z)
 
 
 def intersectX(out, ax, ay, bx, by, x):

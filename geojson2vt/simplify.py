@@ -2,7 +2,7 @@ import math
 
 
 # calculate simplification data using optimized Douglas-Peucker algorithm
-def simplify(coords, first, last, sqTolerance):
+def simplify(coords, first, last=0, sqTolerance=0.0):
     maxSqDist = sqTolerance
     mid = (last - first) >> 1
     minPosToMid = last - first
@@ -13,9 +13,9 @@ def simplify(coords, first, last, sqTolerance):
     bx = coords[last]
     by = coords[last + 1]
 
-    for i in range(first + 3, len(last), step=3):
+    for i in range(first + 3, last, 3):
         d = getSqSegDist(coords[i], coords[i + 1], ax, ay, bx, by)
-
+        print("d: ", d, "maxSqDist: ", maxSqDist)
         if d > maxSqDist:
             index = i
             maxSqDist = d
@@ -23,7 +23,6 @@ def simplify(coords, first, last, sqTolerance):
         elif d == maxSqDist:
             # a workaround to ensure we choose a pivot close to the middle of the list,
             # reducing recursion depth, for certain degenerate inputs
-            # https:#github.com/mapbox/geojson-vt/issues/104
             posToMid = math.abs(i - mid)
             if posToMid < minPosToMid:
                 index = i

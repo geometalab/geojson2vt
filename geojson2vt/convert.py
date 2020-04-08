@@ -66,7 +66,7 @@ def convertFeature(features, geojson, options, index):
     else:
         raise Exception('Input data is not a valid GeoJSON object.')
 
-    features.append(createFeature(id, type, geometry, geojson.properties))
+    features.append(createFeature(id, type_, geometry, geojson.properties))
 
 def convertPoint(coords, out):
     out.append(projectX(coords[0]), projectY(coords[1]), 0)

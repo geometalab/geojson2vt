@@ -12,19 +12,19 @@ def transformTile(tile, extent):
     ty = tile.y
 
     for feature in tile.features:
-        geom = feature.geometry
-        type_ = feature.type
+        geom = feature.get('geometry')
+        type_ = feature.get('type')
 
         feature.geometry = []
 
         if type_ == 1:
-            for j in range(len(geom), step=2):
+            for j in range(0, len(geom), 2):
                 feature.geometry.append(transformPoint(
                     geom[j], geom[j + 1], extent, z2, tx, ty))
         else:
             for j in range(len(geom)):
                 ring = []
-                for k in range(len(geom[j]), step=2):
+                for k in range(0, len(geom[j]), 2):
                     ring.append(transformPoint(
                         geom[j][k], geom[j][k + 1], extent, z2, tx, ty))
                 feature.geometry.append(ring)
