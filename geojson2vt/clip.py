@@ -60,12 +60,10 @@ def clip(features, scale, k1, k2, axis, minAll, maxAll, options):
                 clip_lines(polygon, newPolygon, k1, k2, axis, True)
                 if len(newPolygon) > 0:
                     newGeometry.append(newPolygon)
-                    # newGeometry += newPolygon
 
         if len(newGeometry) > 0:
             if options.get('lineMetrics', False) and type_ == 'LineString':
                 for line in newGeometry:
-                    # for line in newGeometry.geom:
                     clipped.append(createFeature(
                         feature.get('id'), type_, line, feature.get('tags')))
                 continue
@@ -81,7 +79,6 @@ def clip(features, scale, k1, k2, axis, minAll, maxAll, options):
 
             clipped.append(createFeature(
                 feature.get('id'), type_, newGeometry, feature.get('tags')))
-            # feature.get('id'), type_, newGeometry.geom, feature.get('tags')))
 
     return clipped if len(clipped) > 0 else None
 
