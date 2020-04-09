@@ -34,7 +34,8 @@ def add_feature(tile, feature, tolerance, options):
 
     if type_ == 'Point' or type == 'MultiPoint':
         for i in range(0, len(geom), 3):
-            simplified.append(geom[i], geom[i + 1])
+            simplified.append(geom[i])
+            simplified.append(geom[i + 1])
             tile.numPoints += 1
             tile.numSimplified += 1
 
@@ -43,6 +44,7 @@ def add_feature(tile, feature, tolerance, options):
 
     elif type_ == 'MultiLineString' or type_ == 'Polygon':
         for i in range(len(geom)):
+            # addLine(simplified, geom[i], tile, tolerance, type === 'Polygon', i === 0);
             addLine(simplified, geom[i], tile,
                     tolerance, type_ == 'Polygon', i == 0)
 
@@ -53,9 +55,9 @@ def add_feature(tile, feature, tolerance, options):
                 addLine(simplified, polygon[i], tile, tolerance, True, i == 0)
 
     if len(simplified) > 0:
-        tags = feature.tags
+        tags = feature.get('tags')
 
-        if type_ == 'LineString' and options.lineMetrics:
+        if type_ == 'LineString' and options.get('lineMetrics'):
             tags = {}
             for key in feature.tags:
                 tags[key] = feature.tags[key]
@@ -67,23 +69,24 @@ def add_feature(tile, feature, tolerance, options):
             "type": 3 if type_ == 'Polygon' or type_ == 'MultiPolygon' else (2 if type_ == 'LineString' or type_ == 'MultiLineString' else 1),
             "tags": tags
         }
-        if feature.id is not None:
-            tileFeature.id = feature.id
-        tile.features.append(tileFeature)
+        if feature.get('id', None) is not None:
+            tileFeature['id'] = feature.get('id')
+        tile['features'].append(tileFeature)
 
 
 def addLine(result, geom, tile, tolerance, isPolygon, isOuter):
     sqTolerance = tolerance * tolerance
 
-    if tolerance > 0 and (geom.size < (isPolygon if isPolygon is not None else tolerance)):
+    if tolerance > 0 and (geom.size < (sqTolerance if isPolygon else tolerance)):
         tile['numPoints'] += len(geom) / 3
         return
 
     ring = []
     for i in range(0, len(geom), 3):
         if tolerance == 0 or geom[i + 2] > sqTolerance:
-            tile.numSimplified += 1
-            ring.append(geom[i], geom[i + 1])
+            tile['numSimplified'] += 1
+            ring.append(geom[i])
+            ring.append(geom[i + 1])
         tile['numPoints'] += 1
 
     if isPolygon:

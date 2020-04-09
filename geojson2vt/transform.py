@@ -1,4 +1,3 @@
-import math
 # Transforms the coordinates of each feature in the given tile from
 # mercator-projected space into (extent x extent) tile space.
 
@@ -27,7 +26,7 @@ def transform_tile(tile, extent):
                 for k in range(0, len(geom[j]), 2):
                     ring.append(transform_point(
                         geom[j][k], geom[j][k + 1], extent, z2, tx, ty))
-                feature.geometry.append(ring)
+                feature['geometry'].append(ring)
 
     tile['transformed'] = True
     return tile
@@ -35,6 +34,6 @@ def transform_tile(tile, extent):
 
 def transform_point(x, y, extent, z2, tx, ty):
     return [
-        math.round(extent * (x * z2 - tx)),
-        math.round(extent * (y * z2 - ty))
+        round(extent * (x * z2 - tx), 0),
+        round(extent * (y * z2 - ty), 0)
     ]

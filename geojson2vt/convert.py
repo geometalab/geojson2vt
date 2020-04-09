@@ -19,7 +19,7 @@ def convert(data, options):
     return features
 
 
-def convert_feature(features, geojson, options, index):
+def convert_feature(features, geojson, options, index=None):
     if geojson.get('geometry', None) is None:
         return
 
@@ -27,7 +27,7 @@ def convert_feature(features, geojson, options, index):
     type_ = geojson.get('geometry').get('type')
     tolerance = math.pow(options.get(
         'tolerance') / ((1 << options.get('maxZoom')) * options.get('extent')), 2)
-    geometry = []
+    geometry = Slice([])
     id_ = geojson.get('id')
     if options.get('promoteId', None) is not None:
         id_ = geojson.properties[options.promoteId]
@@ -70,7 +70,8 @@ def convert_feature(features, geojson, options, index):
     else:
         raise Exception('Input data is not a valid GeoJSON object.')
 
-    features.append(create_feature(id_, type_, geometry, geojson.get('properties')))
+    features.append(create_feature(
+        id_, type_, geometry, geojson.get('properties')))
 
 
 def convert_point(coords, out):
@@ -101,10 +102,10 @@ def convert_line(ring, out, tolerance, isPolygon):
     last = len(out) - 3
     out[2] = 1
     simplify(out, 0, last, tolerance)
-    out[last + 2] = 1
+    out[last + 2] = 1.
 
     out.size = abs(size)
-    out.start = 0
+    out.start = 0.
     out.end = out.size
 
 
@@ -116,10 +117,14 @@ def convert_lines(rings, out, tolerance, isPolygon):
 
 
 def project_x(x):
-    return x / 360 + 0.5
+    return x / 360. + 0.5
 
 
 def project_y(y):
-    sin = math.sin(y * math.pi / 180)
-    y2 = 0.5 - 0.25 * math.log((1 + sin) / (1 - sin)) / math.pi
-    return 0 if y2 < 0 else (1 if y2 > 1 else y2)
+    sin = math.sin(y * math.pi / 180.)
+    if sin == 1.:
+        return 0.
+    if sin == -1.:
+        return 1.
+    y2 = 0.5 - 0.25 * math.log((1. + sin) / (1. - sin)) / math.pi
+    return 0 if y2 < 0. else (1. if y2 > 1. else y2)

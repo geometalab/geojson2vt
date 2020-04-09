@@ -20,7 +20,7 @@ defaultOptions = {
 }
 
 
-class GeoJSONVT:
+class GeoJsonVt:
     def __init__(self, data, options):
         options = self.options = extend(defaultOptions, options)
         debug = options.get('debug')
@@ -90,7 +90,6 @@ class GeoJSONVT:
 
             z2 = 1 << z
             id_ = to_Id(z, x, y)
-            # tile = self.tiles[id_]
             tile = self.tiles.get(id_, None)
 
             if tile is None:
@@ -103,8 +102,7 @@ class GeoJSONVT:
 
                 if debug:
                     if debug > 1:
-                        print('tile z%d-%d-%d (features: %d, points: %d, simplified: %d)'.format(
-                            z, x, y, tile.get('numFeatures'), tile.get('numPoints'), tile.get('numSimplified')))
+                        print(f'tile z{z}-{x}-{y} (features: {tile.get("numFeatures")}, points: {tile.get("numPoints")}, simplified: {tile.get("numSimplified")})')
                         stop = datetime.now()
                         print(f'creation took {stop-start}')
                     key = f'z{z}'
@@ -131,7 +129,7 @@ class GeoJSONVT:
             # if we slice further down, no need to keep source geometry
             tile['source'] = None
 
-            if len(features) == 0:
+            if not features or len(features) == 0:
                 continue
 
             if debug > 1:
@@ -198,9 +196,9 @@ class GeoJSONVT:
             stack.append(y * 2 + 1)
 
     def get_tile(self, z, x, y):
-        z = + z
-        x = +x
-        y = + y
+        z = int(z)
+        x = int(x)
+        y = int(y)
 
         options = self.options
         extent, debug = options.get('extent'), options.get('debug')
@@ -216,7 +214,7 @@ class GeoJSONVT:
             return transform_tile(self.tiles[id_], extent)
 
         if debug > 1:
-            print('drilling down to z%d-%d-%d'.format(z, x, y))
+            print('drilling down to z{z}-{x}-{y}')
 
         z0 = z
         x0 = x
@@ -235,7 +233,7 @@ class GeoJSONVT:
         # if we found a parent tile containing the original geometry, we can drill down from it
         start = None
         if debug > 1:
-            print('found parent tile z%d-%d-%d'.format(z0, x0, y0))
+            print(f'found parent tile z{z0}-{x0}-{y0}')
             print('drilling down')
             start = datetime.now()
 
@@ -245,7 +243,8 @@ class GeoJSONVT:
             stop = datetime.now()
             print(f'drilling down took {stop -start}')
 
-        return transform_tile(self.tiles[id_], extent) if self.tiles.get(id_, None) is not None else None
+        transformed = transform_tile(self.tiles[id_], extent) if self.tiles.get(id_, None) is not None else None
+        return transformed
 
 
 def to_Id(z, x, y):
@@ -258,5 +257,5 @@ def extend(dest, src):
     return dest
 
 
-def geojsonvt(data, options):
-    return GeoJSONVT(data, options)
+def geojson2vt(data, options):
+    return GeoJsonVt(data, options)
