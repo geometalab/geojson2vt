@@ -18,7 +18,7 @@ def transform_tile(tile, extent):
 
         if type_ == 1:
             for j in range(0, len(geom), 2):
-                feature.geometry.append(transform_point(
+                feature['geometry'].append(transform_point(
                     geom[j], geom[j + 1], extent, z2, tx, ty))
         else:
             for j in range(len(geom)):

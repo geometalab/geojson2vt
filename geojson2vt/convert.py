@@ -29,7 +29,7 @@ def convert_feature(features, geojson, options, index=None):
         'tolerance') / ((1 << options.get('maxZoom')) * options.get('extent')), 2)
     geometry = Slice([])
     id_ = geojson.get('id')
-    if options.get('promoteId', None) is not None:
+    if options.get('promoteId', None) is not None and geojson.get('properties', None) is not None and 'promoteId' in geojson.get('properties'):
         id_ = geojson['properties'][options.get('promoteId')]
     elif options.get('generateId', None) is not None:
         id_ = index if index is not None else 0
@@ -42,13 +42,13 @@ def convert_feature(features, geojson, options, index=None):
     elif type_ == 'LineString':
         convert_line(coords, geometry, tolerance, False)
     elif type_ == 'MultiLineString':
-        if options.lineMetrics:
+        if options.get('lineMetrics'):
             # explode into linestrings to be able to track metrics
             for line in coords:
                 geometry = []
                 convert_line(line, geometry, tolerance, False)
                 features.append(create_feature(id_, 'LineString',
-                                             geometry, geojson.properties))
+                                               geometry, geojson.properties))
             return
         else:
             convert_lines(coords, geometry, tolerance, False)
@@ -60,11 +60,11 @@ def convert_feature(features, geojson, options, index=None):
             convert_lines(polygon, newPolygon, tolerance, True)
             geometry.append(newPolygon)
     elif type_ == 'GeometryCollection':
-        for singleGeometry in geojson.geometry.geometries:
+        for singleGeometry in geojson['geometry']['geometries']:
             convert_feature(features, {
                 "id": str(id_),
                 "geometry": singleGeometry,
-                "properties": geojson.properties
+                "properties": geojson.get('properties')
             }, options, index)
         return
     else:

@@ -10,9 +10,9 @@ def wrap(features, options):
     right = clip(features, 1,  1 - buffer, 2 + buffer,
                  0, -1, 2, options)  # right world copy
 
-    if left or right:
+    if left is not None or right is not None:
         c = clip(features, 1, -buffer, 1 + buffer, 0, -1, 2, options)
-        merged = c if len(c) > 0 else []  # :nter world copy
+        merged = c if c is not None else []  # :nter world copy
 
         if left is not None:
             merged = shift_feature_coords(
@@ -33,8 +33,7 @@ def shift_feature_coords(features, offset):
         new_geometry = None
 
         if type_ == 'Pint' or type_ == 'MultiPint' or type_ == 'LineString':
-            new_geometry = shift_coords(feature.geometry, offset)
-
+            new_geometry = shift_coords(feature.get('geometry'), offset)
         elif type_ == 'MultiLineSting' or type_ == 'Polygon':
             new_geometry = []
             for line in feature.get('geometry'):

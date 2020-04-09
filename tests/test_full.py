@@ -7,8 +7,8 @@ from geojson2vt.geojson2vt import geojson2vt
 
 
 @pytest.mark.parametrize("input_file,expected_file,options", [
-    ('us-states.json', 'us-states-tiles.json',
-     {'indexMaxZoom': 7, 'indexMaxPoints': 200}),
+    # ('us-states.json', 'us-states-tiles.json',
+    #  {'indexMaxZoom': 7, 'indexMaxPoints': 200}),
     # ('dateline.json', 'dateline-tiles.json',
     #  {'indexMaxZoom': 0, 'indexMaxPoints': 10000}),
     # ('dateline.json', 'dateline-metrics-tiles.json',
@@ -19,8 +19,8 @@ from geojson2vt.geojson2vt import geojson2vt
     #  {'indexMaxZoom': 0, 'indexMaxPoints': 10000}),
     # ('single-geom.json', 'single-geom-tiles.json',
     #  {'indexMaxZoom': 0, 'indexMaxPoints': 10000}),
-    # ('ids.json', 'ids-promote-id-tiles.json',
-    #  {'indexMaxZoom': 0, 'promoteId': 'prop0', 'indexMaxPoints': 10000}),
+    ('ids.json', 'ids-promote-id-tiles.json',
+     {'indexMaxZoom': 0, 'promoteId': 'prop0', 'indexMaxPoints': 10000}),
     # ('ids.json', 'ids-generate-id-tiles.json',
     #  {'indexMaxZoom': 0, 'generateId': True, 'indexMaxPoints': 10000})
 ])
@@ -93,3 +93,8 @@ def walk_list(lst):
     elif isinstance(lst[0], dict):
         for i in range(len(lst)):
             walk_dict(lst[i])
+
+
+if __name__ == "__main__":
+    test_tiles('ids.json', 'ids-promote-id-tiles.json',
+               {'indexMaxZoom': 0, 'promoteId': 'prop0', 'indexMaxPoints': 10000})

@@ -17,8 +17,10 @@ def test_get_tile():
     geoJsonVt = geojson2vt(data, {})
 
     # TODO figure out how Id is handle, receive a 38 insted of 42
-    assert geoJsonVt.get_tile('7', '37', '48').get(
-        'features') == get_json('us-states-z7-37-48.json')
+    features = geoJsonVt.get_tile('7', '37', '48').get(
+        'features')
+    expected = get_json('us-states-z7-37-48.json')
+    assert features == expected
     assert geoJsonVt.get_tile(9, 148, 192).get('features') == square
     assert geoJsonVt.get_tile(11, 800, 400) == None
     assert geoJsonVt.get_tile(-5, 123.25, 400.25) == None

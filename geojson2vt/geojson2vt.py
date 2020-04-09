@@ -30,7 +30,7 @@ class GeoJsonVt:
 
         if options.get('maxZoom') < 0 or options.get('maxZoom') > 24:
             raise Exception('maxZoom should be in the 0-24 range')
-        if options.get('promoteId', None)is not None and options.get('generateId', None) is not None:
+        if options.get('promoteId', None) is not None and options.get('generateId', False):
             raise Exception(
                 'promoteId and generateId cannot be used together.')
 
