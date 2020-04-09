@@ -20,9 +20,9 @@ from geojson2vt.geojson2vt import geojson2vt
     # ('single-geom.json', 'single-geom-tiles.json',
     #  {'indexMaxZoom': 0, 'indexMaxPoints': 10000}),
     # ('ids.json', 'ids-promote-id-tiles.json',
-    #  {'indexMaxZoom': 0, 'promoteId': 'prop0'}),
+    #  {'indexMaxZoom': 0, 'promoteId': 'prop0', 'indexMaxPoints': 10000}),
     # ('ids.json', 'ids-generate-id-tiles.json',
-    #  {'indexMaxZoom': 0, 'generateId': True})
+    #  {'indexMaxZoom': 0, 'generateId': True, 'indexMaxPoints': 10000})
 ])
 def test_tiles(input_file, expected_file, options):
     tiles = gen_tiles(get_json(input_file), options)
@@ -46,11 +46,7 @@ def test_invalid_geo_json():
 
 
 def gen_tiles(data, options):
-    opt = options.copy()
-    opt['indexMaxZoom'] = 0
-    opt['indexMaxPoints'] = 10000
-
-    geoJsonVt = geojson2vt(data, opt)
+    geoJsonVt = geojson2vt(data, options)
 
     output = {}
 
