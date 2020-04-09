@@ -1,5 +1,6 @@
 import os
 import json
+import pprint
 
 import pytest
 
@@ -7,28 +8,30 @@ from geojson2vt.geojson2vt import geojson2vt
 
 
 @pytest.mark.parametrize("input_file,expected_file,options", [
-    # ('us-states.json', 'us-states-tiles.json',
-    #  {'indexMaxZoom': 7, 'indexMaxPoints': 200}),
-    # ('dateline.json', 'dateline-tiles.json',
-    #  {'indexMaxZoom': 0, 'indexMaxPoints': 10000}),
-    # ('dateline.json', 'dateline-metrics-tiles.json',
-    #  {'indexMaxZoom': 0, 'indexMaxPoints': 10000, 'lineMetrics': True}),
-    # ('feature.json', 'feature-tiles.json',
-    #  {'indexMaxZoom': 0, 'indexMaxPoints': 10000}),
-    # ('collection.json', 'collection-tiles.json',
-    #  {'indexMaxZoom': 0, 'indexMaxPoints': 10000}),
-    # ('single-geom.json', 'single-geom-tiles.json',
-    #  {'indexMaxZoom': 0, 'indexMaxPoints': 10000}),
+    ('us-states.json', 'us-states-tiles.json',
+     {'indexMaxZoom': 7, 'indexMaxPoints': 200}),
+    ('dateline.json', 'dateline-tiles.json',
+     {'indexMaxZoom': 0, 'indexMaxPoints': 10000}),
+    ('dateline.json', 'dateline-metrics-tiles.json',
+     {'indexMaxZoom': 0, 'indexMaxPoints': 10000, 'lineMetrics': True}),
+    ('feature.json', 'feature-tiles.json',
+     {'indexMaxZoom': 0, 'indexMaxPoints': 10000}),
+    ('collection.json', 'collection-tiles.json',
+     {'indexMaxZoom': 0, 'indexMaxPoints': 10000}),
+    ('single-geom.json', 'single-geom-tiles.json',
+     {'indexMaxZoom': 0, 'indexMaxPoints': 10000}),
     ('ids.json', 'ids-promote-id-tiles.json',
      {'indexMaxZoom': 0, 'promoteId': 'prop0', 'indexMaxPoints': 10000}),
-    # ('ids.json', 'ids-generate-id-tiles.json',
-    #  {'indexMaxZoom': 0, 'generateId': True, 'indexMaxPoints': 10000})
+    ('ids.json', 'ids-generate-id-tiles.json',
+     {'indexMaxZoom': 0, 'generateId': True, 'indexMaxPoints': 10000})
 ])
 def test_tiles(input_file, expected_file, options):
+    expected = get_json(expected_file)
     tiles = gen_tiles(get_json(input_file), options)
-    for t, j in zip(tiles.items(), get_json(expected_file).items()):
+    pp = pprint.PrettyPrinter(indent=4)
+    pp.pprint(tiles['z7-37-49'])
+    for t, j in zip(tiles.items(), expected.items()):
         assert t == j
-        break
 
 
 def test_empty_gejson():
@@ -96,5 +99,5 @@ def walk_list(lst):
 
 
 if __name__ == "__main__":
-    test_tiles('ids.json', 'ids-promote-id-tiles.json',
-               {'indexMaxZoom': 0, 'promoteId': 'prop0', 'indexMaxPoints': 10000})
+    test_tiles('us-states.json', 'us-states-tiles.json',
+               {'indexMaxZoom': 7, 'indexMaxPoints': 200}),
