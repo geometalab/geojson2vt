@@ -36,31 +36,30 @@ def add_feature(tile, feature, tolerance, options):
         for i in range(0, len(geom), 3):
             simplified.append(geom[i])
             simplified.append(geom[i + 1])
-            tile.numPoints += 1
-            tile.numSimplified += 1
+            tile['numPoints'] += 1
+            tile['numSimplified'] += 1
 
     elif type_ == 'LineString':
-        addLine(simplified, geom, tile, tolerance, False, False)
+        add_line(simplified, geom, tile, tolerance, False, False)
 
     elif type_ == 'MultiLineString' or type_ == 'Polygon':
         for i in range(len(geom)):
-            # addLine(simplified, geom[i], tile, tolerance, type === 'Polygon', i === 0);
-            addLine(simplified, geom[i], tile,
+            add_line(simplified, geom[i], tile,
                     tolerance, type_ == 'Polygon', i == 0)
 
     elif type_ == 'MultiPolygon':
         for k in range(len(geom)):
             polygon = geom[k]
             for i in range(len(polygon)):
-                addLine(simplified, polygon[i], tile, tolerance, True, i == 0)
+                add_line(simplified, polygon[i], tile, tolerance, True, i == 0)
 
     if len(simplified) > 0:
         tags = feature.get('tags')
 
         if type_ == 'LineString' and options.get('lineMetrics'):
             tags = {}
-            for key in feature.tags:
-                tags[key] = feature.tags[key]
+            for key in feature.get('tags'):
+                tags[key] = feature['tags'][key]
             tags['mapbox_clip_start'] = geom.start / geom.size
             tags['mapbox_clip_end'] = geom.end / geom.size
 
@@ -74,23 +73,23 @@ def add_feature(tile, feature, tolerance, options):
         tile['features'].append(tileFeature)
 
 
-def addLine(result, geom, tile, tolerance, isPolygon, isOuter):
-    sqTolerance = tolerance * tolerance
+def add_line(result, geom, tile, tolerance, is_polygon, is_outer):
+    sq_tolerance = tolerance * tolerance
 
-    if tolerance > 0 and (geom.size < (sqTolerance if isPolygon else tolerance)):
+    if tolerance > 0 and (geom.size < (sq_tolerance if is_polygon else tolerance)):
         tile['numPoints'] += len(geom) / 3
         return
 
     ring = []
     for i in range(0, len(geom), 3):
-        if tolerance == 0 or geom[i + 2] > sqTolerance:
+        if tolerance == 0 or geom[i + 2] > sq_tolerance:
             tile['numSimplified'] += 1
             ring.append(geom[i])
             ring.append(geom[i + 1])
         tile['numPoints'] += 1
 
-    if isPolygon:
-        rewind(ring, isOuter)
+    if is_polygon:
+        rewind(ring, is_outer)
 
     result.append(ring)
 
@@ -102,11 +101,11 @@ def rewind(ring, clockwise):
     for i in range(0, l, 2):
         area += (ring[i] - ring[j]) * (ring[i + 1] + ring[j + 1])
         j = i
-    if area > 0 == clockwise:
+    if (area > 0) == clockwise:
         for i in range(0, l, 2):
             x = ring[i]
             y = ring[i + 1]
-            ring[i] = ring[len - 2 - i]
-            ring[i + 1] = ring[len - 1 - i]
-            ring[len - 2 - i] = x
-            ring[len - 1 - i] = y
+            ring[i] = ring[l - 2 - i]
+            ring[i + 1] = ring[l - 1 - i]
+            ring[l - 2 - i] = x
+            ring[l - 1 - i] = y
