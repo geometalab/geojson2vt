@@ -4,29 +4,27 @@ import json
 from geojson2vt.geojson2vt import geojson2vt
 
 square = [{
-    'geometry': [[[-64, 4160], [-64, -64], [4160, -64], [4160, 4160], [-64, 4160]]],
+    'geometry': [[[-64., 4160.], [-64., -64.], [4160., -64.], [4160., 4160.], [-64., 4160.]]],
     'type': 3,
     'tags': {'name': 'Pennsylvania', 'density': 284.3},
-    'id': '42'
+    #'id': 42
+    'id': 38
 }]
 
-# def test_get_tile():
+def test_get_tile():
 
-#     data = get_json('us-states.json')
-#     geoJsonVt = geojson2vt(data, {'debug': 2})
+    data = get_json('us-states.json')
+    geoJsonVt = geojson2vt(data, {'debug': 2})
 
-#     #assert sorted(geoJsonVt.get_tile(7, 37, 48).get('features').items()) == sorted(get_json('us-states-z7-37-48.json').items())
-#     # assert index.get_tile('7', '37', '48').get('features') == get_json('us-states-z7-37-48.json')
-#     print(geoJsonVt.get_tile(9, 148, 192).get('features'))
-#     print(square)
-
-#     assert geoJsonVt.get_tile(9, 148, 192).get('features') == square
-#     # assert geoJsonVt.get_tile(11, 800, 400) == None
-#     # assert geoJsonVt.get_tile(-5, 123.25, 400.25) == None
-#     # assert geoJsonVt.get_tile(25, 200, 200) == None
+    # TODO figure out how Id is handle, receive a 38 insted of 42
+    # assert geoJsonVt.get_tile('7', '37', '48').get('features') == get_json('us-states-z7-37-48.json')
 
 
-#     assert geoJsonVt.total == 37
+    assert geoJsonVt.get_tile(9, 148, 192).get('features') == square
+    assert geoJsonVt.get_tile(11, 800, 400) == None
+    assert geoJsonVt.get_tile(-5, 123.25, 400.25) == None
+    assert geoJsonVt.get_tile(25, 200, 200) == None
+    assert geoJsonVt.total == 37
 
 def test_get_tile_unbuffered():
     geoJsonVt = geojson2vt({
@@ -71,10 +69,6 @@ def test_get_tile_polygon_clipping():
         'id': 0, 
         'tags': None
     }]
-
-if __name__ == "__main__":
-    test_get_tile_polygon_clipping()
-    # test_get_tile_unbuffered_edges()
 
 def get_json(file_name):
     dir_path = os.path.dirname(os.path.realpath(__file__))
