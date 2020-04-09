@@ -30,7 +30,7 @@ def convert_feature(features, geojson, options, index=None):
     geometry = Slice([])
     id_ = geojson.get('id')
     if options.get('promoteId', None) is not None:
-        id_ = geojson.properties[options.promoteId]
+        id_ = geojson['properties'][options.get('promoteId')]
     elif options.get('generateId', None) is not None:
         id_ = index if index is not None else 0
 
@@ -47,7 +47,7 @@ def convert_feature(features, geojson, options, index=None):
             for line in coords:
                 geometry = []
                 convert_line(line, geometry, tolerance, False)
-                features.push(create_feature(id, 'LineString',
+                features.append(create_feature(id_, 'LineString',
                                              geometry, geojson.properties))
             return
         else:
@@ -62,7 +62,7 @@ def convert_feature(features, geojson, options, index=None):
     elif type_ == 'GeometryCollection':
         for singleGeometry in geojson.geometry.geometries:
             convert_feature(features, {
-                "id": id_,
+                "id": str(id_),
                 "geometry": singleGeometry,
                 "properties": geojson.properties
             }, options, index)
@@ -75,7 +75,9 @@ def convert_feature(features, geojson, options, index=None):
 
 
 def convert_point(coords, out):
-    out.append(project_x(coords[0]), project_y(coords[1]), 0)
+    out.append(project_x(coords[0]))
+    out.append(project_y(coords[1]))
+    out.append(0)
 
 
 def convert_line(ring, out, tolerance, isPolygon):

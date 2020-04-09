@@ -140,7 +140,6 @@ def clip_line(geom, newGeom, k1, k2, axis, isPolygon, trackMetrics):
             if trackMetrics:
                 slice_.end = l + segLen * t
             newGeom.append(slice_)
-            # newGeom += slice_
             slice_ = new_slice(geom)
 
         if trackMetrics:
@@ -163,7 +162,6 @@ def clip_line(geom, newGeom, k1, k2, axis, isPolygon, trackMetrics):
     # add the final slice
     if len(slice_) > 0:
         newGeom.append(slice_)
-        # newGeom += slice_
 
 
 def new_slice(line):
@@ -180,7 +178,6 @@ def clip_lines(geom, newGeom, k1, k2, axis, isPolygon):
 
 
 def add_point(out, x, y, z):
-    #out.append(x, y, z)
     out.append(x)
     out.append(y)
     out.append(z)

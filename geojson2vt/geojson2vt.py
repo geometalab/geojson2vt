@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 
 from geojson2vt.convert import convert
@@ -16,19 +17,16 @@ defaultOptions = {
     "lineMetrics": False,     # whether to calculate line metrics
     "promoteId": None,        # name of a feature property to be promoted to feature.id
     "generateId": False,      # whether to generate feature ids. Cannot be used with promoteId
-    "debug": 0                # logging level (0, 1 or 2)
 }
 
 
 class GeoJsonVt:
-    def __init__(self, data, options):
+    def __init__(self, data, options, log_level=logging.INFO):
+        logging.basicConfig(
+            level=log_level, format='%(asctime)s %(levelname)s %(message)s')
         options = self.options = extend(defaultOptions, options)
-        debug = options.get('debug')
 
-        start = None
-        if debug:
-            print('preprocess data')
-            start = datetime.now()
+        logging.debug('preprocess data start')
 
         if options.get('maxZoom') < 0 or options.get('maxZoom') > 24:
             raise Exception('maxZoom should be in the 0-24 range')
@@ -43,15 +41,11 @@ class GeoJsonVt:
         self.tiles = {}
         self.tile_coords = []
 
-        stop = None
-        if debug:
-            stop = datetime.now()
-            print(f'preprocess data took {stop -start}')
-            print(
-                f'index: maxZoom: {options.get("indexMaxZoom")}, maxPoints: {options.get("indexMaxPoints")}')
-            start = datetime.now()
-            self.stats = {}
-            self.total = 0
+        logging.debug(f'preprocess data end')
+        logging.debug(
+            f'index: maxZoom: {options.get("indexMaxZoom")}, maxPoints: {options.get("indexMaxPoints")}')
+        self.stats = {}
+        self.total = 0
 
         # wraps features (ie extreme west and extreme east)
         features = wrap(features, options)
@@ -60,13 +54,12 @@ class GeoJsonVt:
         if len(features) > 0:
             self.split_tile(features, 0, 0, 0)
 
-        if debug:
-            if len(features) > 0:
-                print(
-                    f'features: {self.tiles[0].get("numFeatures")}, points: {self.tiles[0].get("numPoints")}')
+        if len(features) > 0:
+            logging.debug(
+                f'features: {self.tiles[0].get("numFeatures")}, points: {self.tiles[0].get("numPoints")}')
             stop = datetime.now()
-            print(f'generate tiles took {stop -start}')
-            print('tiles generated:', self.total, self.stats)
+        logging.debug(f'generate tiles end')
+        logging.debug('tiles generated:', self.total, self.stats)
 
     # splits features from a parent tile to sub-tiles.
     # z, x, and y are the coordinates of the parent tile
@@ -78,9 +71,6 @@ class GeoJsonVt:
     def split_tile(self, features, z, x, y, cz=None, cx=None, cy=None):
         stack = [features, z, x, y]
         options = self.options
-        debug = options.get('debug')
-        start = None
-        stop = None
         # avoid recursion by using a processing queue
         while len(stack) > 0:
             y = stack.pop()
@@ -93,21 +83,18 @@ class GeoJsonVt:
             tile = self.tiles.get(id_, None)
 
             if tile is None:
-                if debug > 1:
-                    print('creation')
-                    start = datetime.now()
+                logging.debug('creation start')
 
-                tile = self.tiles[id_] = create_tile(features, z, x, y, options)
-                self.tile_coords.append({z, x, y})
+                self.tiles[id_] = create_tile(features, z, x, y, options)
+                tile = self.tiles[id_]
+                self.tile_coords.append({'z':z, 'x':x, 'y':y})
 
-                if debug:
-                    if debug > 1:
-                        print(f'tile z{z}-{x}-{y} (features: {tile.get("numFeatures")}, points: {tile.get("numPoints")}, simplified: {tile.get("numSimplified")})')
-                        stop = datetime.now()
-                        print(f'creation took {stop-start}')
-                    key = f'z{z}'
-                    self.stats[key] = self.stats.get(key, 0) + 1
-                    self.total += 1
+                logging.debug(
+                    f'tile z{z}-{x}-{y} (features: {tile.get("numFeatures")}, points: {tile.get("numPoints")}, simplified: {tile.get("numSimplified")})')
+                logging.debug(f'creation end')
+                key = f'z{z}'
+                self.stats[key] = self.stats.get(key, 0) + 1
+                self.total += 1
 
             # save reference to original geometry in tile so that we can drill down later if we stop now
             tile['source'] = features
@@ -132,9 +119,7 @@ class GeoJsonVt:
             if not features or len(features) == 0:
                 continue
 
-            if debug > 1:
-                print('clipping')
-                start = datetime.now()
+            logging.debug('clipping start')
 
             # values we'll use for clipping
             k1 = 0.5 * options.get('buffer') / options.get('extent')
@@ -167,9 +152,7 @@ class GeoJsonVt:
                           tile['minY'], tile['maxY'], options)
                 right = None
 
-            if debug > 1:
-                stop = datetime.now()
-                print(f'clipping took {stop-start}')
+            logging.debug(f'clipping took end')
 
             #stack.push(tl or [], z + 1, x * 2,     y * 2)
             stack.append(tl if not None else [])
@@ -201,7 +184,7 @@ class GeoJsonVt:
         y = int(y)
 
         options = self.options
-        extent, debug = options.get('extent'), options.get('debug')
+        extent = options.get('extent')
 
         if z < 0 or z > 24:
             return None
@@ -213,8 +196,7 @@ class GeoJsonVt:
         if self.tiles.get(id_, None) is not None:
             return transform_tile(self.tiles[id_], extent)
 
-        if debug > 1:
-            print('drilling down to z{z}-{x}-{y}')
+        logging.debug(f'drilling down to z{z}-{x}-{y}')
 
         z0 = z
         x0 = x
@@ -231,24 +213,21 @@ class GeoJsonVt:
             return None
 
         # if we found a parent tile containing the original geometry, we can drill down from it
-        start = None
-        if debug > 1:
-            print(f'found parent tile z{z0}-{x0}-{y0}')
-            print('drilling down')
-            start = datetime.now()
+        logging.debug(f'found parent tile z{z0}-{x0}-{y0}')
+        logging.debug('drilling down start')
 
         self.split_tile(parent.get('source'), z0, x0, y0, z, x, y)
 
-        if debug > 1:
-            stop = datetime.now()
-            print(f'drilling down took {stop -start}')
+        logging.debug(f'drilling down end')
 
-        transformed = transform_tile(self.tiles[id_], extent) if self.tiles.get(id_, None) is not None else None
+        transformed = transform_tile(self.tiles[id_], extent) if self.tiles.get(
+            id_, None) is not None else None
         return transformed
 
 
 def to_Id(z, x, y):
-    return (((1 << z) * y + x) * 32) + z
+    id_ = (((1 << z) * y + x) * 32) + z
+    return id_
 
 
 def extend(dest, src):
@@ -257,5 +236,5 @@ def extend(dest, src):
     return dest
 
 
-def geojson2vt(data, options):
-    return GeoJsonVt(data, options)
+def geojson2vt(data, options, log_level=logging.INFO):
+    return GeoJsonVt(data, options, log_level)

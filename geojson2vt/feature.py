@@ -1,6 +1,6 @@
 def create_feature(id_, type_, geom, tags):
     feature = {
-        "id": None if id_ is None else id_,
+        "id": None if id_ is None else str(id_),
         "type": type_,
         "geometry": geom,
         "tags": tags,

@@ -14,7 +14,7 @@ square = [{
 def test_get_tile():
 
     data = get_json('us-states.json')
-    geoJsonVt = geojson2vt(data, {'debug': 2})
+    geoJsonVt = geojson2vt(data, {})
 
     # TODO figure out how Id is handle, receive a 38 insted of 42
     # assert geoJsonVt.get_tile('7', '37', '48').get('features') == get_json('us-states-z7-37-48.json')
