@@ -1,9 +1,7 @@
-import math
-
-
-def createTile(features, z, tx, ty, options):
-    tolerance = 0 if z == options.maxZoom else options.tolerance / \
-        ((1 << z) * options.extent)
+def create_tile(features, z, tx, ty, options):
+    features = features if features is not None else []
+    tolerance = 0 if z == options.get('maxZoom') else options.get('tolerance') / \
+        ((1 << z) * options.get('extent'))
     tile = {
         "features": [],
         "numPoints": 0,
@@ -20,19 +18,19 @@ def createTile(features, z, tx, ty, options):
         "maxY": 0
     }
     for feature in features:
-        addFeature(tile, feature, tolerance, options)
+        add_feature(tile, feature, tolerance, options)
     return tile
 
 
-def addFeature(tile, feature, tolerance, options):
+def add_feature(tile, feature, tolerance, options):
     geom = feature.get('geometry')
     type_ = feature.get('type')
     simplified = []
 
-    tile.minX = math.min(tile.minX, feature.minX)
-    tile.minY = math.min(tile.minY, feature.minY)
-    tile.maxX = math.max(tile.maxX, feature.maxX)
-    tile.maxY = math.max(tile.maxY, feature.maxY)
+    tile['minX'] = min(tile['minX'], feature['minX'])
+    tile['minY'] = min(tile['minY'], feature['minY'])
+    tile['maxX'] = max(tile['maxX'], feature['maxX'])
+    tile['maxY'] = max(tile['maxY'], feature['maxY'])
 
     if type_ == 'Point' or type == 'MultiPoint':
         for i in range(0, len(geom), 3):
@@ -78,7 +76,7 @@ def addLine(result, geom, tile, tolerance, isPolygon, isOuter):
     sqTolerance = tolerance * tolerance
 
     if tolerance > 0 and (geom.size < (isPolygon if isPolygon is not None else tolerance)):
-        tile.numPoints += len(geom) / 3
+        tile['numPoints'] += len(geom) / 3
         return
 
     ring = []
@@ -86,7 +84,7 @@ def addLine(result, geom, tile, tolerance, isPolygon, isOuter):
         if tolerance == 0 or geom[i + 2] > sqTolerance:
             tile.numSimplified += 1
             ring.append(geom[i], geom[i + 1])
-        tile.numPoints += 1
+        tile['numPoints'] += 1
 
     if isPolygon:
         rewind(ring, isOuter)

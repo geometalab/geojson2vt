@@ -1,9 +1,9 @@
 from geojson2vt.clip import clip
-from geojson2vt.feature import createFeature
+from geojson2vt.feature import Slice, create_feature
 
 
 def wrap(features, options):
-    buffer = options.buffer / options.extent
+    buffer = options.get('buffer') / options.get('extent')
     merged = features
     left = clip(features, 1, -1 - buffer, buffer,
                 0, -1, 2, options)  # left world copy
@@ -15,51 +15,53 @@ def wrap(features, options):
         merged = c if len(c) > 0 else []  # :nter world copy
 
         if left is not None:
-            merged = shiftFeatureCoords(left, 1).concat(
-                merged)  # merge left into center
+            merged = shift_feature_coords(
+                left, 1) + merged  # merge left into center
         if right is not None:
-            merged = merged.concat(shiftFeatureCoords(
-                right, -1))  # merge right into center
+            # merge right into center
+            merged = merged + (shift_feature_coords(right, -1))
 
     return merged
 
 
-def shiftFeatureCoords(features, offset):
-    newFeatures = []
+def shift_feature_coords(features, offset):
+    new_features = []
 
     for i in range(len(features)):
         feature = features[i]
         type_ = feature.get('type')
-        newGeometry = None
+        new_geometry = None
 
         if type_ == 'Pint' or type_ == 'MultiPint' or type_ == 'LineString':
-            newGeometry = shiftCoords(feature.geometry, offset)
+            new_geometry = shift_coords(feature.geometry, offset)
 
         elif type_ == 'MultiLineSting' or type_ == 'Polygon':
-            newGeometry = []
-            for line in feature.geometry:
-                newGeometry.append(shiftCoords(line, offset))
+            new_geometry = []
+            for line in feature.get('geometry'):
+                new_geometry.append(shift_coords(line, offset))
         elif type_ == 'MultiPolygon':
-            newGeometry = []
-            for polygon in feature.geometry:
-                newPolygon = []
+            new_geometry = []
+            for polygon in feature.get('geometry'):
+                new_polygon = []
                 for line in polygon:
-                    newPolygon.append(shiftCoords(line, offset))
-                newGeometry.append(newPolygon)
+                    new_polygon.append(shift_coords(line, offset))
+                new_geometry.append(new_polygon)
 
-        newFeatures.apend(createFeature(
-            feature.get('id'), type_, newGeometry, feature.get('tags')))
-    return newFeatures
+        new_features.append(create_feature(
+            feature.get('id'), type_, new_geometry, feature.get('tags')))
+    return new_features
 
 
-def shiftCoords(points, offset):
-    newPoints = []
-    newPoints.size = points.size
+def shift_coords(points, offset):
+    new_points = Slice([])
+    new_points.size = points.size
 
     if points.start is not None:
-        newPoints.start = points.start
-        newPoints.end = points.end
+        new_points.start = points.start
+        new_points.end = points.end
 
     for i in range(0, len(points), 3):
-        newPoints.push(points[i] + offset, points[i + 1], points[i + 2])
-    return newPoints
+        new_points.append(points[i] + offset)
+        new_points.append(points[i + 1])
+        new_points.append(points[i + 2])
+    return new_points

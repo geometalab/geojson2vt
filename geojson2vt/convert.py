@@ -1,64 +1,68 @@
 import math
 
 from geojson2vt.simplify import simplify
-from geojson2vt.feature import createFeature
+from geojson2vt.feature import Slice, create_feature
 
 # converts GeoJSON feature into an intermediate projected JSON vector format with simplification data
 
+
 def convert(data, options):
     features = []
-    if data.type == 'FeatureCollection':
-        for i in range(len(data.feature)):
-            convertFeature(features, data.features[i], options, i)
-    elif data.type == 'Feature':
-        convertFeature(features, data, options)
+    if data.get('type') == 'FeatureCollection':
+        for i in range(len(data.get('features'))):
+            convert_feature(features, data.get('features')[i], options, i)
+    elif data.get('type') == 'Feature':
+        convert_feature(features, data, options)
     else:
         # single geometry or a geometry collection
-        convertFeature(features, {"geometry": data}, options)
+        convert_feature(features, {"geometry": data}, options)
     return features
 
-def convertFeature(features, geojson, options, index):
-    if geojson.geometry is None:
-         return
 
-    coords = geojson.geometry.coordinates
-    type_ = geojson.geometry.type
-    tolerance = math.pow(options.tolerance / ((1 << options.maxZoom) * options.extent), 2)
+def convert_feature(features, geojson, options, index):
+    if geojson.get('geometry', None) is None:
+        return
+
+    coords = geojson.get('geometry').get('coordinates')
+    type_ = geojson.get('geometry').get('type')
+    tolerance = math.pow(options.get(
+        'tolerance') / ((1 << options.get('maxZoom')) * options.get('extent')), 2)
     geometry = []
-    id = geojson.id
-    if options.promoteId is not None:
-        id = geojson.properties[options.promoteId]
-    elif options.generateId is not None:
-        id = index if index is not None else 0
-    
+    id_ = geojson.get('id')
+    if options.get('promoteId', None) is not None:
+        id_ = geojson.properties[options.promoteId]
+    elif options.get('generateId', None) is not None:
+        id_ = index if index is not None else 0
+
     if type_ == 'Point':
-        convertPoint(coords, geometry)
+        convert_point(coords, geometry)
     elif type_ == 'MultiPoint':
         for p in coords:
-            convertPoint(p, geometry)
+            convert_point(p, geometry)
     elif type_ == 'LineString':
-        convertLine(coords, geometry, tolerance, False)
+        convert_line(coords, geometry, tolerance, False)
     elif type_ == 'MultiLineString':
         if options.lineMetrics:
             # explode into linestrings to be able to track metrics
             for line in coords:
                 geometry = []
-                convertLine(line, geometry, tolerance, False)
-                features.push(createFeature(id, 'LineString', geometry, geojson.properties))
+                convert_line(line, geometry, tolerance, False)
+                features.push(create_feature(id, 'LineString',
+                                             geometry, geojson.properties))
             return
         else:
-            convertLines(coords, geometry, tolerance, False)
+            convert_lines(coords, geometry, tolerance, False)
     elif type_ == 'Polygon':
-        convertLines(coords, geometry, tolerance, True)
+        convert_lines(coords, geometry, tolerance, True)
     elif type_ == 'MultiPolygon':
         for polygon in coords:
             newPolygon = []
-            convertLines(polygon, newPolygon, tolerance, True)
-            geometry.push(newPolygon)
+            convert_lines(polygon, newPolygon, tolerance, True)
+            geometry.append(newPolygon)
     elif type_ == 'GeometryCollection':
         for singleGeometry in geojson.geometry.geometries:
-            convertFeature(features, {
-                "id": id,
+            convert_feature(features, {
+                "id": id_,
                 "geometry": singleGeometry,
                 "properties": geojson.properties
             }, options, index)
@@ -66,26 +70,31 @@ def convertFeature(features, geojson, options, index):
     else:
         raise Exception('Input data is not a valid GeoJSON object.')
 
-    features.append(createFeature(id, type_, geometry, geojson.properties))
+    features.append(create_feature(id_, type_, geometry, geojson.get('properties')))
 
-def convertPoint(coords, out):
-    out.append(projectX(coords[0]), projectY(coords[1]), 0)
 
-def convertLine(ring, out, tolerance, isPolygon):
+def convert_point(coords, out):
+    out.append(project_x(coords[0]), project_y(coords[1]), 0)
+
+
+def convert_line(ring, out, tolerance, isPolygon):
     x0, y0 = None, None
     size = 0
 
     for j in range(len(ring)):
-        x = projectX(ring[j][0]);
-        y = projectY(ring[j][1]);
+        x = project_x(ring[j][0])
+        y = project_y(ring[j][1])
 
-        out.append(x, y, 0)
+        out.append(x)
+        out.append(y)
+        out.append(0)
 
         if j > 0:
             if isPolygon:
-                size += (x0 * y - x * y0) / 2; # area
+                size += (x0 * y - x * y0) / 2  # area
             else:
-                size += math.sqrt(math.pow(x - x0, 2) + math.pow(y - y0, 2)); # length
+                size += math.sqrt(math.pow(x - x0, 2) +
+                                  math.pow(y - y0, 2))  # length
         x0 = x
         y0 = y
 
@@ -94,20 +103,23 @@ def convertLine(ring, out, tolerance, isPolygon):
     simplify(out, 0, last, tolerance)
     out[last + 2] = 1
 
-    out.size = math.abs(size)
+    out.size = abs(size)
     out.start = 0
     out.end = out.size
 
-def convertLines(rings, out, tolerance, isPolygon):
+
+def convert_lines(rings, out, tolerance, isPolygon):
     for i in range(len(rings)):
-        geom = []
-        convertLine(rings[i], geom, tolerance, isPolygon)
+        geom = Slice([])
+        convert_line(rings[i], geom, tolerance, isPolygon)
         out.append(geom)
 
-def projectX(x):
+
+def project_x(x):
     return x / 360 + 0.5
 
-def projectY(y):
-    sin = math.sin(y * math.PI / 180)
-    y2 = 0.5 - 0.25 * math.log((1 + sin) / (1 - sin)) / math.PI
+
+def project_y(y):
+    sin = math.sin(y * math.pi / 180)
+    y2 = 0.5 - 0.25 * math.log((1 + sin) / (1 - sin)) / math.pi
     return 0 if y2 < 0 else (1 if y2 > 1 else y2)

@@ -15,7 +15,6 @@ def simplify(coords, first, last=0, sqTolerance=0.0):
 
     for i in range(first + 3, last, 3):
         d = getSqSegDist(coords[i], coords[i + 1], ax, ay, bx, by)
-        print("d: ", d, "maxSqDist: ", maxSqDist)
         if d > maxSqDist:
             index = i
             maxSqDist = d
@@ -23,7 +22,7 @@ def simplify(coords, first, last=0, sqTolerance=0.0):
         elif d == maxSqDist:
             # a workaround to ensure we choose a pivot close to the middle of the list,
             # reducing recursion depth, for certain degenerate inputs
-            posToMid = math.abs(i - mid)
+            posToMid = abs(i - mid)
             if posToMid < minPosToMid:
                 index = i
                 minPosToMid = posToMid

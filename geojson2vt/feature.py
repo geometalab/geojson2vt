@@ -1,4 +1,4 @@
-def createFeature(id_, type_, geom, tags):
+def create_feature(id_, type_, geom, tags):
     feature = {
         "id": None if id_ is None else id_,
         "type": type_,
@@ -11,21 +11,21 @@ def createFeature(id_, type_, geom, tags):
     }
 
     if type_ == 'Point' or type_ == 'MultiPoint' or type_ == 'LineString':
-        calcLineBBox(feature, geom)
+        calc_line_bbox(feature, geom)
     elif type_ == 'Polygon':
         # the outer ring(ie[0]) contains all inner rings
-        calcLineBBox(feature, geom[0])
+        calc_line_bbox(feature, geom[0])
     elif type_ == 'MultiLineString':
         for line in geom:
-            calcLineBBox(feature, line)
+            calc_line_bbox(feature, line)
     elif type_ == 'MultiPolygon':
         for polygon in geom:
             # the outer ring(ie[0]) contains all inner rings
-            calcLineBBox(feature, polygon[0])
+            calc_line_bbox(feature, polygon[0])
     return feature
 
 
-def calcLineBBox(feature, geom):
+def calc_line_bbox(feature, geom):
     for i in range(0, len(geom), 3):
         feature['minX'] = min(feature.get('minX'), geom[i])
         feature['minY'] = min(feature.get('minY'), geom[i + 1])

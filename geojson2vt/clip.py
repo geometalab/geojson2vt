@@ -1,5 +1,5 @@
 import math
-from geojson2vt.feature import createFeature, Slice
+from geojson2vt.feature import create_feature, Slice
 
 
 r""" 
@@ -53,7 +53,10 @@ def clip(features, scale, k1, k2, axis, minAll, maxAll, options):
         elif type_ == 'MultiLineString':
             clip_lines(geometry, newGeometry, k1, k2, axis, False)
         elif type_ == 'Polygon':
-            clip_lines(geometry, newGeometry, k1, k2, axis, True)
+            if any(isinstance(l, list) for l in geometry):
+                clip_lines(geometry, newGeometry, k1, k2, axis, True)
+            else:
+                clip_line(geometry, newGeometry, k1, k2, axis, True, False)
         elif type_ == 'MultiPolygon':
             for polygon in geometry:
                 newPolygon = Slice([])
@@ -64,7 +67,7 @@ def clip(features, scale, k1, k2, axis, minAll, maxAll, options):
         if len(newGeometry) > 0:
             if options.get('lineMetrics', False) and type_ == 'LineString':
                 for line in newGeometry:
-                    clipped.append(createFeature(
+                    clipped.append(create_feature(
                         feature.get('id'), type_, line, feature.get('tags')))
                 continue
             if type_ == 'LineString' or type_ == 'MultiLineString':
@@ -77,7 +80,7 @@ def clip(features, scale, k1, k2, axis, minAll, maxAll, options):
             if type_ == 'Point' or type_ == 'MultiPoint':
                 type_ = 'Point' if len(newGeometry) == 3 else 'MultiPoint'
 
-            clipped.append(createFeature(
+            clipped.append(create_feature(
                 feature.get('id'), type_, newGeometry, feature.get('tags')))
 
     return clipped if len(clipped) > 0 else None
@@ -96,7 +99,7 @@ def clip_line(geom, newGeom, k1, k2, axis, isPolygon, trackMetrics):
     l = geom.start if isinstance(geom, Slice) else 0.
     segLen, t = None, None
 
-    # TODO: change geom something if float
+    # length = len(geom) if isinstance(geom, list) else 0
     for i in range(0, len(geom) - 3, 3):
         ax = geom[i]
         ay = geom[i + 1]
