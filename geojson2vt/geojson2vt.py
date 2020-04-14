@@ -110,7 +110,7 @@ class GeoJsonVt:
             elif cz is not None:
                 # stop tiling if it's not an ancestor of the target tile
                 zoomSteps = cz - z
-                if x != cx >> zoomSteps or y != cy >> zoomSteps:
+                if x != (cx >> zoomSteps) or y != (cy >> zoomSteps):
                     continue
 
             # if we slice further down, no need to keep source geometry
@@ -193,7 +193,8 @@ class GeoJsonVt:
         x = (x + z2) & (z2 - 1)  # wrap tile x coordinate
 
         id_ = to_Id(z, x, y)
-        if self.tiles.get(id_, None) is not None:
+        current_tile = self.tiles.get(id_, None) 
+        if current_tile is not None:
             return transform_tile(self.tiles[id_], extent)
 
         logging.debug(f'drilling down to z{z}-{x}-{y}')

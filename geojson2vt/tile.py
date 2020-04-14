@@ -68,8 +68,9 @@ def add_feature(tile, feature, tolerance, options):
             "type": 3 if type_ == 'Polygon' or type_ == 'MultiPolygon' else (2 if type_ == 'LineString' or type_ == 'MultiLineString' else 1),
             "tags": tags
         }
-        if feature.get('id', None) is not None:
-            tileFeature['id'] = feature.get('id')
+        current_id = feature.get('id', None)
+        if current_id is not None:
+            tileFeature['id'] = current_id
         tile['features'].append(tileFeature)
 
 
