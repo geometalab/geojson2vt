@@ -11,7 +11,7 @@ tile_index = geojsonvt(geo_json)
 features = tileIndex.get_tile(z, x, y).get('features')
 
 # show an array of tile coordinates created so far
-print(tileIndex.tileCoords) # [{z: 0, x: 0, y: 0}, ...]
+print(tile_index.tile_coords) # [{z: 0, x: 0, y: 0}, ...]
 ```
 
 ### Options
