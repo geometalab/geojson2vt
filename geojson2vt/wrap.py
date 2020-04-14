@@ -30,7 +30,8 @@ def shift_feature_coords(features, offset):
     for i in range(len(features)):
         feature = features[i]
         type_ = feature.get('type')
-        new_geometry = None
+        # new_geometry = None
+        new_geometry = []
 
         if type_ == 'Pint' or type_ == 'MultiPint' or type_ == 'LineString':
             new_geometry = shift_coords(feature.get('geometry'), offset)

@@ -7,24 +7,26 @@ from geojson2vt.wrap import wrap
 from geojson2vt.transform import transform_tile
 from geojson2vt.tile import create_tile
 
-defaultOptions = {
-    "maxZoom": 14,            # max zoom to preserve detail on
-    "indexMaxZoom": 5,        # max zoom in the tile index
-    "indexMaxPoints": 100000,  # max number of points per tile in the tile index
-    "tolerance": 3,           # simplification tolerance (higher means simpler)
-    "extent": 4096,           # tile extent
-    "buffer": 64,             # tile buffer on each side
-    "lineMetrics": False,     # whether to calculate line metrics
-    "promoteId": None,        # name of a feature property to be promoted to feature.id
-    "generateId": False,      # whether to generate feature ids. Cannot be used with promoteId
-}
+
+def get_default_options():
+    return {
+        "maxZoom": 14,            # max zoom to preserve detail on
+        "indexMaxZoom": 5,        # max zoom in the tile index
+        "indexMaxPoints": 100000,  # max number of points per tile in the tile index
+        "tolerance": 3,           # simplification tolerance (higher means simpler)
+        "extent": 4096,           # tile extent
+        "buffer": 64,             # tile buffer on each side
+        "lineMetrics": False,     # whether to calculate line metrics
+        "promoteId": None,        # name of a feature property to be promoted to feature.id
+        "generateId": False,      # whether to generate feature ids. Cannot be used with promoteId
+    }
 
 
 class GeoJsonVt:
     def __init__(self, data, options, log_level=logging.INFO):
         logging.basicConfig(
             level=log_level, format='%(asctime)s %(levelname)s %(message)s')
-        options = self.options = extend(defaultOptions, options)
+        options = self.options = extend(get_default_options(), options)
 
         logging.debug('preprocess data start')
 
@@ -87,7 +89,7 @@ class GeoJsonVt:
 
                 self.tiles[id_] = create_tile(features, z, x, y, options)
                 tile = self.tiles[id_]
-                self.tile_coords.append({'z':z, 'x':x, 'y':y})
+                self.tile_coords.append({'z': z, 'x': x, 'y': y})
 
                 logging.debug(
                     f'tile z{z}-{x}-{y} (features: {tile.get("numFeatures")}, points: {tile.get("numPoints")}, simplified: {tile.get("numSimplified")})')
@@ -193,7 +195,7 @@ class GeoJsonVt:
         x = (x + z2) & (z2 - 1)  # wrap tile x coordinate
 
         id_ = to_Id(z, x, y)
-        current_tile = self.tiles.get(id_, None) 
+        current_tile = self.tiles.get(id_, None)
         if current_tile is not None:
             return transform_tile(self.tiles[id_], extent)
 
@@ -238,4 +240,5 @@ def extend(dest, src):
 
 
 def geojson2vt(data, options, log_level=logging.INFO):
-    return GeoJsonVt(data, options, log_level)
+    geojson_vt = GeoJsonVt(data, options, log_level)
+    return geojson_vt
