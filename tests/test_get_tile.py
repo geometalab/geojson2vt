@@ -7,7 +7,7 @@ square = [{
     'geometry': [[[-64., 4160.], [-64., -64.], [4160., -64.], [4160., 4160.], [-64., 4160.]]],
     'type': 3,
     'tags': {'name': 'Pennsylvania', 'density': 284.3},
-    'id': 38
+    'id': '42'
 }]
 
 
@@ -35,7 +35,7 @@ def test_get_tile_unbuffered():
     })
     assert geojson_vt.get_tile(2, 1, 1) == None
     assert geojson_vt.get_tile(2, 2, 1).get('features') == [
-        {'geometry': [[[0., 0.], [0., 4096.]]], 'type': 2, 'id': '0', 'tags': None}]
+        {'geometry': [[[0., 0.], [0., 4096.]]], 'type': 2, 'tags': None}]
 
 
 def test_get_tile_unbuffered_edges():
@@ -46,7 +46,7 @@ def test_get_tile_unbuffered_edges():
         'buffer': 0
     })
     assert geojson_vt.get_tile(2, 1, 0).get('features') == [{'geometry': [
-        [[0.0, 4096.0], [4096.0, 4096.0]]], 'type': 2, 'id': '0', 'tags': None}]
+        [[0.0, 4096.0], [4096.0, 4096.0]]], 'type': 2, 'tags': None}]
     assert geojson_vt.get_tile(2, 1, 1).get('features') == []
 
 
@@ -66,7 +66,6 @@ def test_get_tile_polygon_clipping():
     assert geojson_vt.get_tile(5, 19, 9).get('features') == [{
         'geometry': [[[3072., 3072.], [5120., 3072.], [5120., 5120.], [3072., 5120.], [3072., 3072.]]],
         'type': 3,
-        'id': '0',
         'tags': None
     }]
 

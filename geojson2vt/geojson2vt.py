@@ -13,7 +13,8 @@ def get_default_options():
         "maxZoom": 14,            # max zoom to preserve detail on
         "indexMaxZoom": 5,        # max zoom in the tile index
         "indexMaxPoints": 100000,  # max number of points per tile in the tile index
-        "tolerance": 3,           # simplification tolerance (higher means simpler)
+        # simplification tolerance (higher means simpler)
+        "tolerance": 3,
         "extent": 4096,           # tile extent
         "buffer": 64,             # tile buffer on each side
         "lineMetrics": False,     # whether to calculate line metrics
@@ -240,5 +241,4 @@ def extend(dest, src):
 
 
 def geojson2vt(data, options, log_level=logging.INFO):
-    geojson_vt = GeoJsonVt(data, options, log_level)
-    return geojson_vt
+    return GeoJsonVt(data, options, log_level)
