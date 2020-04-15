@@ -13,5 +13,5 @@ deploy:
   password:
     secure: $PYPI_PASSWORD
   on:
-    branch: master
-    python: '3.8'
+    branch: release
+    python: '3.6'
