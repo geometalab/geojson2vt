@@ -44,7 +44,6 @@ geojson2vt only operates on zoom levels up to 24.
 Install using pip (`pip install geojson2vt`).
 
 ```python
-// import as a ES module
 import geojson2vt from geojson2vt;
 ```
 
