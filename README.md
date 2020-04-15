@@ -1,5 +1,5 @@
 # geojson2vt
-Port to Pyton of [JS GeoJSON-VT](https://github.com/mapbox/geojson-vt) for slicing GeoJSON into vector tiles on the fly.
+Pyton port of [JS GeoJSON-VT](https://github.com/mapbox/geojson-vt) to convert GeoJSON into vector tiles.
 
 ### Usage
 
