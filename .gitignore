@@ -137,3 +137,6 @@ dmypy.json
 
 # Local History for Visual Studio Code
 .history/
+
+# sphinx build folder
+_build
