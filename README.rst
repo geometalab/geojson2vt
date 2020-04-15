@@ -39,6 +39,6 @@ geojson2vt only operates on zoom levels up to 24.
 |
 
 Acknowledgements
------
+----------------
 
 All the credit belongs to the collaborators of JS GeoJSON-VT.
