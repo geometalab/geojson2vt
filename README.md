@@ -21,7 +21,7 @@ You can fine-tune the results with an options object,
 although the defaults are sensible and work well for most use cases.
 
 ```python
-tile_index = geojsonvt(data, {
+tile_index = geojson2vt(data, {
 	'maxZoom': 14,  # max zoom to preserve detail on; can't be higher than 24
 	'tolerance': 3, # simplification tolerance (higher means simpler)
 	'extent': 4096, # tile extent (both width and height)
