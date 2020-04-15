@@ -15,14 +15,15 @@ Usage
 You can fine-tune the results with an options object,
 although the defaults are sensible and work well for most use cases.
 
-By default, tiles at zoom levels above `indexMaxZoom` are generated on the fly, but you can pre-generate all possible tiles for `data` by setting `indexMaxZoom` and `maxZoom` to the same value, setting `indexMaxPoints` to `0`, and then accessing the resulting tile coordinates from the `tile_coords` property of `tile_index`.
+By default, tiles at zoom levels above ``indexMaxZoom`` are generated on the fly, but you can pre-generate all possible tiles for data by setting ``indexMaxZoom`` and ``maxZoom`` to the same value, setting ``indexMaxPoints`` to 0, and then accessing the resulting tile coordinates from the ``tile_coords`` property of ``tile_index``.
 
-The `promoteId` and `generateId` options ignore existing `id` values on the feature objects.
+The ``promoteId`` and ``generateId`` options ignore existing ``id`` values on the feature objects.
 
 geojson2vt only operates on zoom levels up to 24.
 
 
 .. code:: python
+
     tile_index = geojsonvt(data, {
         'maxZoom': 14,  # max zoom to preserve detail on; can't be higher than 24
         'tolerance': 3, # simplification tolerance (higher means simpler)
@@ -40,4 +41,4 @@ geojson2vt only operates on zoom levels up to 24.
 Acknowledgements
 -----
 
-All the credit belongs to the collaborators of [JS GeoJSON-VT](https://github.com/mapbox/geojson-vt).
+All the credit belongs to the collaborators of JS GeoJSON-VT.
