@@ -10,8 +10,7 @@ notifications:
 deploy:
   provider: pypi
   user: $PYPI_USER
-  password:
-    secure: $PYPI_PASSWORD
+  password: $PYPI_PASSWORD
   on:
     branch: release
     python: '3.6'
