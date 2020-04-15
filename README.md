@@ -6,13 +6,13 @@ Python port of [JS GeoJSON-VT](https://github.com/mapbox/geojson-vt) to convert 
 
 ```python
 # build an initial index of tiles
-tile_index = geojsonvt(geo_json)
+tile_index = geojson2vt(geojson, {})
 
 # request a particular tile
 features = tile_index.get_tile(z, x, y).get('features')
 
 # show an array of tile coordinates created so far
-print(tile_index.tile_coords) # [{z: 0, x: 0, y: 0}, ...]
+print(tile_index.tile_coords) # [{'z': 0, 'x': 0, 'y': 0}, ...]
 ```
 
 ### Options
