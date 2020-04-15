@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/geometalab/geojson2vt.svg?branch=master)](https://travis-ci.org/geometalab/geojson2vt)
 # geojson2vt
 Python port of [JS GeoJSON-VT](https://github.com/mapbox/geojson-vt) to convert GeoJSON into vector tiles. :scissors: :earth_americas:
 
