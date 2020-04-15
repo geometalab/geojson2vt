@@ -1,5 +1,5 @@
 # geojson2vt
-Converts GeoJSON to vector tiles
+Port to Pyton of [JS GeoJSON-VT](https://github.com/mapbox/geojson-vt) for slicing GeoJSON into vector tiles on the fly.
 
 ### Usage
 
@@ -32,3 +32,25 @@ tile_index = geojsonvt(data, {
 	'indexMaxPoints': 100000 # max number of points per tile in the index
 }, logging.INFO)
 ```
+
+By default, tiles at zoom levels above `indexMaxZoom` are generated on the fly, but you can pre-generate all possible tiles for `data` by setting `indexMaxZoom` and `maxZoom` to the same value, setting `indexMaxPoints` to `0`, and then accessing the resulting tile coordinates from the `tile_coords` property of `tile_index`.
+
+The `promoteId` and `generateId` options ignore existing `id` values on the feature objects.
+
+geojson2vt only operates on zoom levels up to 24.
+
+### Install
+
+Install using pip (`pip install geojson2vt`).
+
+```python
+// import as a ES module
+import geojson2vt from geojson2vt;
+```
+
+## Acknowledgements
+All the credit belongs to the collaborators of [JS GeoJSON-VT](https://github.com/mapbox/geojson-vt).
+
+## Notes
+Currently, geojson2vt isn't written in a very pythonic way. This is due to the fact of the port from geojson-vt.
+Further development could lead to a more pythonic maner for a more seamless Python usage. :snake:
