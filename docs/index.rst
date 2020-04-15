@@ -1,5 +1,5 @@
-.. pyGeoTile documentation master file, created by
-   sphinx-quickstart on Tue Apr 25 09:54:52 2017.
+.. geojson2vt documentation master file, created by
+   sphinx-quickstart on Tue Apr 15 09:54:52 2020.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 

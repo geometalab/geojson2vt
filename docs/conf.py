@@ -22,9 +22,9 @@ import sys
 sys.path.insert(0, os.path.abspath('..'))
 sys.path.insert(0, os.path.abspath('_themes'))
 
-import pygeotile.tile
-import pygeotile.meta
-import pygeotile.point
+import geojson2vt.tile
+import geojson2vt.meta
+import geojson2vt.point
 
 # -- General configuration ------------------------------------------------
 
@@ -54,8 +54,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'pyGeoTile'
-copyright = u'2017, Samuel Kurath'
+project = u'geojson2vt'
+copyright = u'2020, Samuel Kurath'
 author = u'Samuel Kurath'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -106,7 +106,7 @@ html_static_path = ['_static']
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'pyGeoTiledoc'
+htmlhelp_basename = 'geojson2vtdoc'
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -132,7 +132,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'pyGeoTile.tex', u'pyGeoTile Documentation',
+    (master_doc, 'geojson2vt.tex', u'geojson2vt Documentation',
      u'Samuel Kurath', 'manual'),
 ]
 
@@ -141,7 +141,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'pygeotile', u'pyGeoTile Documentation',
+    (master_doc, 'geojson2vt', u'geojson2vt Documentation',
      [author], 1)
 ]
 
@@ -151,7 +151,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'pyGeoTile', u'pyGeoTile Documentation',
-     author, 'pyGeoTile', 'One line description of project.',
+    (master_doc, 'geojson2vt', u'geojson2vt Documentation',
+     author, 'geojson2vt', 'One line description of project.',
      'Miscellaneous'),
 ]
