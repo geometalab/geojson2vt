@@ -1,5 +1,5 @@
 # geojson2vt
-Python port of [JS GeoJSON-VT](https://github.com/mapbox/geojson-vt) to convert GeoJSON into vector tiles.
+Python port of [JS GeoJSON-VT](https://github.com/mapbox/geojson-vt) to convert GeoJSON into vector tiles. :scissors: :earth_americas:
 
 ### Usage
 
