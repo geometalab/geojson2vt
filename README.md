@@ -8,7 +8,7 @@ Port to Pyton of [JS GeoJSON-VT](https://github.com/mapbox/geojson-vt) for slici
 tile_index = geojsonvt(geo_json)
 
 # request a particular tile
-features = tileIndex.get_tile(z, x, y).get('features')
+features = tile_index.get_tile(z, x, y).get('features')
 
 # show an array of tile coordinates created so far
 print(tile_index.tile_coords) # [{z: 0, x: 0, y: 0}, ...]
