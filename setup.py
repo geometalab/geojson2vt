@@ -6,7 +6,7 @@ with open('README.rst', 'rb') as f:
 
 setup(
     name='geojson2vt',
-    version='0.0.2',
+    version='1.0.0',
     description='Python package to convert GeoJSON to vector tiles',
     long_description=readme,
     author='Samuel Kurath',
