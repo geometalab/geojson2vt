@@ -29,6 +29,7 @@ def test_vt2geojson():
         geojson, {'maxZoom': z, 'indexMaxZoom': z, 'indexMaxPoints': 0})
 
     vt_tile = tile_index.get_tile(z, x, y)
+
     result = vt2geojson(vt_tile)
 
     assert result == expected

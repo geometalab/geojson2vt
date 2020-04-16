@@ -1,9 +1,10 @@
 [![Build Status](https://travis-ci.org/geometalab/geojson2vt.svg?branch=master)](https://travis-ci.org/geometalab/geojson2vt)
 # geojson2vt
-Python port of [JS GeoJSON-VT](https://github.com/mapbox/geojson-vt) to convert GeoJSON into vector tiles. :scissors: :earth_americas:
+Python port of [JS GeoJSON-VT](https://github.com/mapbox/geojson-vt) to convert GeoJSON into vector tiles. :scissors: :earth_americas:  
 
+Further, it provides the ability to convert the generate vector tiles to separate GeoJSONs (`vt2geojson`).
 ### Usage
-
+#### geojson2vt
 ```python
 # build an initial index of tiles
 tile_index = geojson2vt(geojson, {})
@@ -39,6 +40,18 @@ By default, tiles at zoom levels above `indexMaxZoom` are generated on the fly, 
 The `promoteId` and `generateId` options ignore existing `id` values on the feature objects.
 
 geojson2vt only operates on zoom levels up to 24.
+
+#### vt2geojson
+```python
+# build an initial index of tiles
+tile_index = geojson2vt(geojson_data, {})
+
+# get a specific tile
+vt_tile = tile_index.get_tile(z, x, y)
+
+# convert a specific vector tile to GeoJSON
+geojson = vt2geojson(vt_tile)
+```
 
 ### Install
 
