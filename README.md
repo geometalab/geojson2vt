@@ -60,7 +60,7 @@ geojson = vt2geojson(vt_tile)
 Install using pip.
 ```bash
 pip install geojson2vt
-``
+```
 
 Import `geojson2vt`
 ```python
