@@ -16,7 +16,7 @@ features = tile_index.get_tile(z, x, y).get('features')
 print(tile_index.tile_coords) # [{'z': 0, 'x': 0, 'y': 0}, ...]
 ```
 
-### Options
+##### Options
 
 You can fine-tune the results with an options object,
 although the defaults are sensible and work well for most use cases.
