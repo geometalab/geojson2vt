@@ -6,13 +6,13 @@ Python port of [JS GeoJSON-VT](https://github.com/mapbox/geojson-vt) to convert 
 
 ```python
 # build an initial index of tiles
-tile_index = geojsonvt(geo_json)
+tile_index = geojson2vt(geojson, {})
 
 # request a particular tile
 features = tile_index.get_tile(z, x, y).get('features')
 
 # show an array of tile coordinates created so far
-print(tile_index.tile_coords) # [{z: 0, x: 0, y: 0}, ...]
+print(tile_index.tile_coords) # [{'z': 0, 'x': 0, 'y': 0}, ...]
 ```
 
 ### Options
@@ -21,7 +21,7 @@ You can fine-tune the results with an options object,
 although the defaults are sensible and work well for most use cases.
 
 ```python
-tile_index = geojsonvt(data, {
+tile_index = geojson2vt(data, {
 	'maxZoom': 14,  # max zoom to preserve detail on; can't be higher than 24
 	'tolerance': 3, # simplification tolerance (higher means simpler)
 	'extent': 4096, # tile extent (both width and height)
@@ -45,7 +45,7 @@ geojson2vt only operates on zoom levels up to 24.
 Install using pip (`pip install geojson2vt`).
 
 ```python
-import geojson2vt from geojson2vt;
+from geojson2vt.geojson2vt import geojson2vt
 ```
 
 ## Acknowledgements
