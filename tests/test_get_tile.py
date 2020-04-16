@@ -2,6 +2,7 @@ import os
 import json
 
 from geojson2vt.geojson2vt import geojson2vt
+from geojson2vt.utils import current_dir, get_json
 
 square = [{
     'geometry': [[[-64., 4160.], [-64., -64.], [4160., -64.], [4160., 4160.], [-64., 4160.]]],
@@ -12,12 +13,16 @@ square = [{
 
 
 def test_get_tile():
-    data = get_json('us-states.json')
+    cur_dir = current_dir(__file__)
+    data_path = os.path.join(cur_dir, f'fixtures/us-states.json')
+    expected_path = os.path.join(cur_dir, f'fixtures/us-states-z7-37-48.json')
+
+    data = get_json(data_path)
     geojson_vt = geojson2vt(data, {})
 
     features = geojson_vt.get_tile('7', '37', '48').get(
         'features')
-    expected = get_json('us-states-z7-37-48.json')
+    expected = get_json(expected_path)
     assert features == expected
     assert geojson_vt.get_tile(9, 148, 192).get('features') == square
     assert geojson_vt.get_tile(11, 800, 400) == None
@@ -68,46 +73,6 @@ def test_get_tile_polygon_clipping():
         'type': 3,
         'tags': None
     }]
-
-
-def get_json(file_name):
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    fixtures_path = os.path.join(dir_path, 'fixtures')
-    file_path = os.path.join(fixtures_path, file_name)
-    data = None
-    with open(file_path) as json_file:
-        data = json.load(json_file)
-        change_int_coords_to_float(data)
-    return data
-
-
-def change_int_coords_to_float(data):
-    if isinstance(data, list):
-        walk_list(data)
-    else:
-        walk_dict(data)
-
-
-def walk_dict(tree):
-    for key, value in tree.items():
-        if isinstance(value, dict):
-            walk_dict(value)
-        if isinstance(value, list):
-            walk_list(value)
-
-
-def walk_list(lst):
-    if len(lst) == 0:
-        return
-    if isinstance(lst[0], list):
-        for l in lst:
-            walk_list(l)
-    elif isinstance(lst[0], int):
-        for i in range(len(lst)):
-            lst[i] = float(lst[i])
-    elif isinstance(lst[0], dict):
-        for i in range(len(lst)):
-            walk_dict(lst[i])
 
 
 if __name__ == "__main__":
