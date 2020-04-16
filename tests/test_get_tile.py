@@ -1,5 +1,4 @@
 import os
-import json
 
 from geojson2vt.geojson2vt import geojson2vt
 from geojson2vt.utils import current_dir, get_json

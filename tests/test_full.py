@@ -1,6 +1,4 @@
 import os
-import json
-import pprint
 
 import pytest
 
@@ -35,8 +33,6 @@ def test_tiles(input_file, expected_file, options):
     input_data = get_json(file_path)
 
     tiles = gen_tiles(input_data, options)
-    # pp = pprint.PrettyPrinter(indent=4)
-    # pp.pprint(tiles['z7-37-49'])
     for t, j in zip(tiles.items(), expected.items()):
         assert t == j
 
