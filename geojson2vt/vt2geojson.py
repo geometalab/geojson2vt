@@ -43,7 +43,7 @@ def vt_feature2geojson_feature(feature, size, x0, y0):
         "type": "Feature",
         "geometry": {
             "type": geometry_types[feature['type']],
-            "coordinates": coords if len(coords) > 1 else coords[0]
+            "coordinates": coords[0] if feature['type'] in range(0,3) and len(coords) else coords
         },
         "properties": feature.get('tags', {})
     }
