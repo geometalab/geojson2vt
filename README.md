@@ -47,10 +47,10 @@ geojson2vt only operates on zoom levels up to 24.
 tile_index = geojson2vt(geojson_data, {})
 
 # get a specific tile
-vt_tile = tile_index.get_tile(z, x, y)
+vector_tile = tile_index.get_tile(z, x, y)
 
 # convert a specific vector tile to GeoJSON
-geojson = vt2geojson(vt_tile)
+geojson = vt2geojson(vector_tile)
 ```
 
 ### Install
